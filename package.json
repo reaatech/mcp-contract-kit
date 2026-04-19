@@ -1,0 +1,83 @@
+{
+  "name": "mcp-contract-kit",
+  "version": "1.0.0",
+  "description": "Conformance test suite for MCP servers. Validate registry compliance, protocol conformance, and routing correctness.",
+  "author": "Rick Somers <rick@reaatech.com> (https://reaatech.com)",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "bin": {
+    "mcp-contract-kit": "dist/src/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/src/index.js"
+    }
+  },
+  "keywords": [
+    "mcp",
+    "contract",
+    "testing",
+    "conformance",
+    "validation",
+    "json-rpc",
+    "agent",
+    "orchestrator"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist coverage",
+    "dev": "npm run build && node --enable-source-maps dist/src/cli.js",
+    "lint": "eslint src tests scripts",
+    "format": "prettier --write src tests scripts",
+    "format:check": "prettier --check src tests scripts",
+    "generate-report": "node --enable-source-maps dist/scripts/generate-report.js",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:ci": "vitest run --coverage",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "prepare": "husky",
+    "precommit": "lint-staged"
+  },
+  "dependencies": {
+    "ajv": "^8.12.0",
+    "chalk": "^5.3.0",
+    "commander": "^12.0.0",
+    "pino": "^10.3.1",
+    "yaml": "^2.4.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/cli-progress": "^3.11.5",
+    "@types/node": "^22.0.0",
+    "@types/ws": "^8.5.10",
+    "@vitest/coverage-v8": "^2.0.0",
+    "eslint": "^9.0.0",
+    "globals": "^17.5.0",
+    "husky": "^9.0.0",
+    "lint-staged": "^15.2.0",
+    "prettier": "^3.2.0",
+    "typescript": "^5.5.0",
+    "typescript-eslint": "^8.0.0",
+    "vitest": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/reaatech/mcp-contract-kit.git"
+  },
+  "homepage": "https://github.com/reaatech/mcp-contract-kit#readme",
+  "bugs": {
+    "url": "https://github.com/reaatech/mcp-contract-kit/issues"
+  },
+  "files": [
+    "dist/src",
+    "LICENSE",
+    "README.md"
+  ]
+}
