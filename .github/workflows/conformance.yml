@@ -1,0 +1,77 @@
+name: Conformance
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        server:
+          - name: mcp-server-starter-ts
+            url: http://localhost:8080
+            version: latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install contract-kit
+        run: npm ci && npm link
+
+      - name: Start test server
+        run: npx mcp-server-starter-ts &
+        background: true
+
+      - name: Wait for server
+        run: sleep 10
+
+      - name: Run conformance tests
+        run: |
+          mcp-contract-kit test ${{ matrix.server.url }} \
+            --format json \
+            --output conformance-report.json
+
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: conformance-report-${{ matrix.server.name }}
+          path: conformance-report.json
+
+      - name: Check for critical failures
+        run: |
+          CRITICAL=$(jq '.failures.critical' conformance-report.json)
+          if [ "$CRITICAL" -gt "0" ]; then
+            echo "Critical conformance issues found"
+            cat conformance-report.json
+            exit 1
+          fi
+
+      - name: Post results as check run
+        uses: actions/github-script@v7
+        if: github.event_name == 'pull_request'
+        with:
+          script: |
+            const fs = require('fs');
+            const report = JSON.parse(fs.readFileSync('conformance-report.json', 'utf8'));
+            const conclusion = report.failures.critical > 0 ? 'failure' : 'success';
+            github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'MCP Conformance - ${{ matrix.server.name }}',
+              head_sha: context.sha,
+              status: 'completed',
+              conclusion: conclusion,
+              output: {
+                title: 'Conformance Test Results',
+                summary: `Passed: ${report.summary.passed}, Failed: ${report.summary.failed}, Warnings: ${report.summary.warnings}`
+              }
+            })
