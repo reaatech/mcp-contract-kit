@@ -1,0 +1,11 @@
+agent_id: helpdesk-agent
+display_name: Helpdesk Agent
+description: Handles employee IT requests with structured policy-aware responses.
+endpoint: https://agents.example.com/helpdesk
+type: mcp
+is_default: true
+confidence_threshold: 0
+clarification_required: false
+examples:
+  - Reset my password
+  - Unlock my account

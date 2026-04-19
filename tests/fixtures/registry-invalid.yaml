@@ -1,0 +1,21 @@
+agents:
+  - agent_id: helpdesk-agent
+    display_name: Helpdesk Agent
+    description: short desc
+    endpoint: https://agents.example.com/helpdesk
+    type: mcp
+    is_default: true
+    confidence_threshold: 0.7
+    clarification_required: false
+    examples:
+      - Reset my password
+  - agent_id: helpdesk-agent
+    display_name: Duplicate Agent
+    description: Another duplicate agent entry to trigger invariant failures.
+    endpoint: https://agents.example.com/duplicate
+    type: mcp
+    is_default: true
+    confidence_threshold: 0.3
+    clarification_required: true
+    examples:
+      - Duplicate

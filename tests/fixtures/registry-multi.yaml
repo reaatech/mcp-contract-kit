@@ -1,0 +1,21 @@
+agents:
+  - agent_id: helpdesk-agent
+    display_name: Helpdesk Agent
+    description: Handles employee IT requests with structured policy-aware responses.
+    endpoint: https://agents.example.com/helpdesk
+    type: mcp
+    is_default: true
+    confidence_threshold: 0
+    clarification_required: false
+    examples:
+      - Reset my password
+  - agent_id: hr-agent
+    display_name: HR Agent
+    description: Supports employees with PTO, benefits, and policy questions.
+    endpoint: https://agents.example.com/hr
+    type: mcp
+    is_default: false
+    confidence_threshold: 0.65
+    clarification_required: true
+    examples:
+      - What is our parental leave policy?

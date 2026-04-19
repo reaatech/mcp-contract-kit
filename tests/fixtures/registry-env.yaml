@@ -1,0 +1,10 @@
+agent_id: env-agent
+display_name: Env Agent
+description: Uses environment variables for deployment-specific endpoint selection.
+endpoint: https://agents.example.com/${DEPLOYMENT_TIER}
+type: mcp
+is_default: true
+confidence_threshold: 0
+clarification_required: false
+examples:
+  - Example
