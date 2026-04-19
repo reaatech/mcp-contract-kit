@@ -1,0 +1,34 @@
+services:
+  contract-kit:
+    build: .
+    command: test http://mock-server:8080 --verbose
+    depends_on:
+      - mock-server
+    volumes:
+      - ./reports:/app/reports
+    environment:
+      - NODE_ENV=test
+      - LOG_LEVEL=info
+
+  mock-server:
+    image: node:22-alpine
+    working_dir: /app
+    command: >
+      npx -y mcp-server-starter-ts --port 8080
+    ports:
+      - "8080:8080"
+
+  integration-test:
+    build: .
+    command: sh -c "sleep 5 && mcp-contract-kit test http://mock-server:8080 --format json --output /app/reports/integration.json"
+    depends_on:
+      - mock-server
+    volumes:
+      - ./reports:/app/reports
+    environment:
+      - NODE_ENV=test
+    profiles:
+      - test
+
+volumes:
+  reports:
