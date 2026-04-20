@@ -195,7 +195,7 @@ function aggregateResults(
     },
     failures: {
       critical: criticalFailures.length,
-      warning: warningResults.length,
+      warning: warningFailures.length,
       info: results.filter((result) => result.severity === Severity.INFO).length,
     },
     passed: criticalFailures.length === 0 && connectionError === undefined,
