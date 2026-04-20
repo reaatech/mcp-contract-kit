@@ -12,7 +12,6 @@ reports
 .eslintrc*
 .prettierrc
 vitest.config.ts
-tsconfig.json
 *.md
 tests
 scripts

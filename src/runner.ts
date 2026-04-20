@@ -175,7 +175,6 @@ function aggregateResults(
   const criticalFailures = results.filter(
     (result) => !result.passed && result.severity === Severity.CRITICAL,
   );
-  const warningFailures = warningResults.filter((result) => !result.passed);
   const passedResults = results.filter((result) => result.passed);
 
   return {
@@ -195,7 +194,7 @@ function aggregateResults(
     },
     failures: {
       critical: criticalFailures.length,
-      warning: warningFailures.length,
+      warning: warningResults.length,
       info: results.filter((result) => result.severity === Severity.INFO).length,
     },
     passed: criticalFailures.length === 0 && connectionError === undefined,

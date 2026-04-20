@@ -31,7 +31,7 @@
     "clean": "rm -rf dist coverage",
     "dev": "npm run build && node --enable-source-maps dist/src/cli.js",
     "lint": "eslint src tests scripts",
-    "audit": "npm audit --audit-level=moderate",
+    "audit": "npm audit --omit=dev",
     "format": "prettier --write src tests scripts",
     "format:check": "prettier --check src tests scripts",
     "generate-report": "node --enable-source-maps dist/scripts/generate-report.js",
