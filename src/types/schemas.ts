@@ -42,7 +42,7 @@ export const MCPRequestSchema = z.object({
   jsonrpc: z.literal('2.0'),
   method: z.string().min(1),
   id: z.union([z.string(), z.number()]),
-  params: z.record(z.unknown()).optional(),
+  params: z.record(z.string(), z.unknown()).optional(),
 });
 
 /**
@@ -82,7 +82,7 @@ export const ToolDefinitionSchema = z.object({
       'Tool name must start with lowercase letter and contain only lowercase letters, numbers, underscores, and hyphens',
     ),
   description: z.string().min(1, 'description is required'),
-  inputSchema: z.record(z.unknown()),
+  inputSchema: z.record(z.string(), z.unknown()),
 });
 
 /** Type inference */
@@ -98,7 +98,7 @@ export const AgentRequestContractSchema = z.object({
   raw_input: z.string().min(1, 'raw_input is required'),
   display_name: z.string().optional(),
   intent_summary: z.string().optional(),
-  entities: z.record(z.unknown()).optional(),
+  entities: z.record(z.string(), z.unknown()).optional(),
   turn_history: z
     .array(
       z.object({
@@ -107,7 +107,7 @@ export const AgentRequestContractSchema = z.object({
       }),
     )
     .optional(),
-  workflow_state: z.record(z.unknown()).optional(),
+  workflow_state: z.record(z.string(), z.unknown()).optional(),
 });
 
 /** Type inference */
@@ -119,7 +119,7 @@ export type AgentRequestContract = z.infer<typeof AgentRequestContractSchema>;
 export const AgentResponseContractSchema = z.object({
   content: z.string().min(1, 'content must be a non-empty string'),
   workflow_complete: z.boolean(),
-  workflow_state: z.record(z.unknown()).optional(),
+  workflow_state: z.record(z.string(), z.unknown()).optional(),
   isError: z.boolean().optional(),
   errorMessage: z.string().optional(),
 });
