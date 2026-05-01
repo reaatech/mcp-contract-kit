@@ -1,0 +1,48 @@
+{
+  "name": "@reaatech/mcp-contract-client",
+  "version": "0.1.0",
+  "description": "MCP client SDK for connecting to and testing MCP servers",
+  "license": "MIT",
+  "author": "Rick Somers <rick@reaatech.com> (https://reaatech.com)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/reaatech/mcp-contract-kit.git",
+    "directory": "packages/client"
+  },
+  "homepage": "https://github.com/reaatech/mcp-contract-kit/tree/main/packages/client#readme",
+  "bugs": {
+    "url": "https://github.com/reaatech/mcp-contract-kit/issues"
+  },
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": ["dist"],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@reaatech/mcp-contract-core": "workspace:*",
+    "@reaatech/mcp-contract-observability": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.0",
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.1"
+  }
+}

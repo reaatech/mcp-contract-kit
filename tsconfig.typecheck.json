@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@reaatech/mcp-contract-core": ["./packages/core/src/index.ts"],
+      "@reaatech/mcp-contract-client": ["./packages/client/src/index.ts"],
+      "@reaatech/mcp-contract-validators": ["./packages/validators/src/index.ts"],
+      "@reaatech/mcp-contract-reporters": ["./packages/reporters/src/index.ts"],
+      "@reaatech/mcp-contract-observability": ["./packages/observability/src/index.ts"],
+      "@reaatech/mcp-contract-cli": ["./packages/cli/src/index.ts"]
+    }
+  },
+  "include": ["packages/**/*.ts", "e2e/**/*.ts"],
+  "exclude": ["node_modules", "dist", "**/*.config.ts", "src", "tests", "skills", "scripts", "docs"]
+}
