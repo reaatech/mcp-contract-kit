@@ -1,0 +1,6 @@
+services:
+  contract-kit:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    command: test http://host.docker.internal:8080
