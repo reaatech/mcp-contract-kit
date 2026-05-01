@@ -1,238 +1,221 @@
-# mcp-contract-kit — Architecture
+# ARCHITECTURE.md — mcp-contract-kit
 
-## System Overview
+> System-level design for the MCP conformance test suite.
+
+## Overview
+
+This monorepo is a conformance test suite for validating MCP (Model Context Protocol) servers. It provides a CLI, a programmatic API, pluggable validators across five categories (registry, protocol, routing, security, performance), and four output reporters. The kit connects to an MCP server, executes validators, aggregates results, and generates pass/fail reports with remediation guidance.
+
+## Package Boundaries
 
 ```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                              Client Layer                                │
-│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐                  │
-│  │     CLI     │    │   Library   │    │  CI/CD      │                  │
-│  │   (npx)     │    │  (import)   │    │  Pipeline   │                  │
-│  └──────┬──────┘    └──────┬──────┘    └──────┬──────┘                  │
-│         │                   │                   │                         │
-│         └───────────────────┼───────────────────┘                         │
-│                             │                                               │
-└─────────────────────────────┼─────────────────────────────────────────────┘
-                              ▼
-┌─────────────────────────────────────────────────────────────────────────┐
-│                           Test Runner                                    │
-│  ┌──────────────────────────────────────────────────────────────────┐   │
-│  │                    Runner Orchestrator                            │   │
-│  │                                                                   │   │
-│  │  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐           │   │
-│  │  │   Config    │───▶│  Scheduler  │───▶│  Executor   │           │   │
-│  │  │  Resolver   │    │ (Parallel)  │    │ (Sequential)│           │   │
-│  │  └─────────────┘    └─────────────┘    └─────────────┘           │   │
-│  └──────────────────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────────────────┘
-                              ▼
-┌─────────────────────────────────────────────────────────────────────────┐
-│                         Validator Pipeline                               │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐    │
-│  │  Registry   │  │  Protocol   │  │   Routing   │  │  Security   │    │
-│  │  Validators │  │  Validators │  │  Validators │  │  Validators │    │
-│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘    │
-│         │                 │                │                │           │
-│         └─────────────────┼────────────────┼────────────────┘           │
-│                           ▼                                              │
-│                  ┌─────────────────┐                                    │
-│                  │  Performance    │                                    │
-│                  │  Validators     │                                    │
-│                  └─────────────────┘                                    │
-└─────────────────────────────────────────────────────────────────────────┘
-                              ▼
-┌─────────────────────────────────────────────────────────────────────────┐
-│                           MCP Client                                     │
-│  ┌──────────────────────────────────────────────────────────────────┐   │
-│  │                    Transport Abstraction                          │   │
-│  │                                                                   │   │
-│  │  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐           │   │
-│  │  │ Streamable  │    │     SSE     │    │   Stdio     │           │   │
-│  │  │   HTTP      │    │  (Legacy)   │    │  (Local)    │           │   │
-│  │  └─────────────┘    └─────────────┘    └─────────────┘           │   │
-│  └──────────────────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────────────────┘
-                              ▼
-┌─────────────────────────────────────────────────────────────────────────┐
-│                        Target MCP Server                                 │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐    │
-│  │   Agent A   │  │   Agent B   │  │  Orchestra- │  │  Any MCP    │    │
-│  │             │  │             │  │   tor Core  │  │   Server    │    │
-│  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘    │
-└─────────────────────────────────────────────────────────────────────────┘
-                              ▼
-┌─────────────────────────────────────────────────────────────────────────┐
-│                          Reporters                                       │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐    │
-│  │   Console   │  │    JSON     │  │     HTML    │  │  Markdown   │    │
-│  │  (Colored)  │  │ (Machine)   │  │  (Dashboard)│  │  (Summary)  │    │
-│  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘    │
-└─────────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                          cli                                │
+│              (CLI entry point, runner, public API)           │
+└───────────────┬──────────┬────────────┬────────────────────┘
+                │          │            │
+     ┌──────────▼──┐ ┌─────▼──────┐ ┌──▼───────────┐
+     │  validators │ │ reporters  │ │    client     │
+     │  (conform-  │ │ (output    │ │ (MCP HTTP     │
+     │   ance      │ │  format-   │ │  transport)   │
+     │   checks)   │ │  ters)     │ │               │
+     └──────┬──────┘ └─────┬──────┘ └───────┬───────┘
+            │              │                │
+            └──────────────┼────────────────┘
+                           │
+                  ┌────────▼────────┐
+                  │   observability │
+                  │  (logs, metrics,│
+                  │    tracing)     │
+                  └────────┬───────┘
+                           │
+                  ┌────────▼────────┐
+                  │      core       │
+                  │ (types, schemas,│
+                  │     utils)      │
+                  └─────────────────┘
 ```
 
----
+| Package | Path | Scope | Purpose |
+|---------|------|-------|---------|
+| `core` | `packages/core/` | `@reaatech/mcp-contract-core` | Domain types, Zod schemas, UUID/id generators, retry helpers |
+| `observability` | `packages/observability/` | `@reaatech/mcp-contract-observability` | Pino logger, in-memory metrics, span tracing |
+| `client` | `packages/client/` | `@reaatech/mcp-contract-client` | HTTP transport, MCP client (connect, tools/list, tools/call) |
+| `validators` | `packages/validators/` | `@reaatech/mcp-contract-validators` | Five suites of conformance checks |
+| `reporters` | `packages/reporters/` | `@reaatech/mcp-contract-reporters` | Console, JSON, Markdown, HTML output formatters |
+| `cli` | `packages/cli/` | `@reaatech/mcp-contract-cli` | CLI entry point, test runner, public API functions |
 
-## Design Principles
+## Data Flow
 
-### 1. Non-Destructive Testing
-- Validators never modify the target server
-- All tests are read-only operations
-- No side effects on the MCP server state
-- Safe to run against production endpoints
+### Test Run (CLI / Programmatic API)
 
-### 2. Idempotent Execution
-- Running the same test twice produces identical results
-- No state carried between test runs
-- Deterministic output for CI/CD reliability
-- Retry-safe operations
+```
+CLI (mcp-contract-kit test <endpoint>)
+       │
+       ▼
+  parseArgs()         ──► Resolve suites, format, timeout, failOn
+       │
+       ▼
+  runTests()          ──► createMCPClient(endpoint)  ──► MCPHtpClient.connect()
+       │                         │
+       │                         ▼
+       │                 HttpTransport.request()
+       │                    POST <endpoint>
+       │                    JSON-RPC body
+       │                         │
+       ▼                         ▼
+  expandSuites()      ◄── Target MCP Server responds
+       │
+       ▼
+  getValidatorsForSuites()  ──► Array<Validator>
+       │
+       ▼
+  executeValidators()       ──► For each validator:
+       │                          1. validator.setup?(context)
+       │                          2. validator.validate(context)
+       │                          3. validator.teardown?(context)
+       │                          4. metrics.recordDuration()
+       │                          5. metrics.inc(passed/failed)
+       │
+       ▼
+  aggregateResults()        ──► TestReport
+       │
+       ▼
+  formatReport(report, format) ──► Console | JSON | Markdown | HTML
+       │
+       ▼
+  Exit code 0 | 1 | 2 | 3
+```
 
-### 3. Fast Feedback
-- Individual validators complete in <1 second
-- Parallel execution where possible
-- Early termination on critical failures (configurable)
-- Progressive reporting (stream results as they complete)
+### YAML Validation (Offline)
 
-### 4. Clear Failures
-- Every test failure includes remediation guidance
-- Severity levels (critical, warning, info) for prioritization
-- Line numbers and context for YAML validation errors
-- Actionable error messages, not just "test failed"
+```
+CLI (mcp-contract-kit validate-yaml <path>)
+       │
+       ▼
+  parseArgs()         ──► Resolve yamlPath, strict mode
+       │
+       ▼
+  validateRegistry()  ──► createNullClient()  (no network)
+       │
+       ▼
+  getRegistryValidators()   ──► [SchemaValidator, InvariantValidator, EnvExpansionValidator]
+       │
+       ▼
+  aggregateResults()        ──► TestReport
+       │
+       ▼
+  formatReport(report, format)
+       │
+       ▼
+  Exit code 0 | 1
+```
 
-### 5. Extensible Architecture
-- Pluggable validator system
-- Custom validators can be added without modifying core
-- Reporter interface for custom output formats
-- Configuration-driven test selection
+## Component Deep Dives
 
----
+### Runner
 
-## Component Deep Dive
-
-### Test Runner
-
-The runner orchestrates all validators and aggregates results:
+Location: `packages/cli/src/runner.ts`
 
 ```typescript
-interface TestRunner {
-  // Run specific suites
-  run(options: RunOptions): Promise<TestReport>;
-  
-  // Run single validator
-  validate(validator: Validator): Promise<TestResult>;
-  
-  // Aggregate results
-  aggregate(results: TestResult[]): TestReport;
+interface RunOptions {
+  endpoint: string;
+  suites?: Array<TestCategory | TestSuite>;
+  timeout?: number;     // default 30000
+  retries?: number;     // default 3
+  headers?: Record<string, string>;
+  yamlPath?: string;
+  verbose?: boolean;
+  failOn?: Severity;    // default CRITICAL
 }
 ```
 
-**Execution Strategy:**
-1. **Configuration Phase** — Resolve suites, filters, and options
-2. **Setup Phase** — Establish MCP connection, validate connectivity
-3. **Execution Phase** — Run validators (parallel where safe, sequential where required)
-4. **Aggregation Phase** — Collect results, calculate summary statistics
-5. **Reporting Phase** — Format and output results
+The runner orchestrates the five execution phases:
 
-**Design Decision:** Validators run in parallel by default for speed, but can be
-forced to run sequentially if they have dependencies or shared state requirements.
+1. **Suite Expansion** — Resolves `TestSuite.ALL` or explicit suites into `TestCategory[]`
+2. **Validator Loading** — Calls `getRegistryValidators()` / `getProtocolValidators()` / etc. to get the validator set
+3. **Client Creation** — `createMCPClient({ endpoint, timeout, retries })` establishes the HTTP transport
+4. **Sequential Execution** — Validators run one at a time (setup → validate → teardown), collecting results
+5. **Aggregation** — Counts passed, failed, warnings, criticals; generates a `TestReport`
 
-### Validator System
+Public API:
+- `runTests(options)` — Full conformance run against an endpoint
+- `validateRegistry(options)` — Offline YAML validation (no network)
+- `validateProtocol(options)` / `validateRouting(options)` — Single-suite convenience wrappers
+- `generateReport(report, format)` — Format a report object into a string
 
-Each validator implements a common interface:
+### Core
+
+Location: `packages/core/src/`
+
+```
+core/
+├── domain.ts    Domain types (Validator, MCPClient, TestReport, enums)
+├── schemas.ts   Zod schemas (AgentConfigSchema, MCP response schemas)
+├── utils.ts     generateId(), generateUUID(), now(), retry()
+└── version.ts   getVersion() from package.json
+```
+
+Key domain interfaces:
 
 ```typescript
 interface Validator {
-  // Unique identifier
   name: string;
-  
-  // Category (registry, protocol, routing, security, performance)
   category: TestCategory;
-  
-  // Severity level for failures
   severity: Severity;
-  
-  // Main validation logic
-  validate(client: MCPClient, context: TestContext): Promise<TestResult>;
-  
-  // Optional: setup before validation
-  setup?(context: TestContext): Promise<void>;
-  
-  // Optional: cleanup after validation
-  teardown?(context: TestContext): Promise<void>;
+  validate(context: ValidationContext): Promise<TestResult>;
+  setup?(context: ValidationContext): Promise<void>;
+  teardown?(context: ValidationContext): Promise<void>;
+}
+
+interface ValidationContext {
+  client: MCPClient;
+  endpoint: string;
+  options: TestOptions;
+  requestId: string;
+  artifacts?: Record<string, unknown>;
 }
 ```
-
-**Validator Categories:**
-
-| Category | Purpose | Execution |
-|----------|---------|-----------|
-| **Registry** | YAML schema and invariant validation | File-based, no network |
-| **Protocol** | MCP JSON-RPC 2.0 spec compliance | Network calls to server |
-| **Routing** | Request/response contract compatibility | Network calls with specific payloads |
-| **Security** | SSRF, auth, input sanitization | Network calls with edge cases |
-| **Performance** | Latency, concurrency, rate limiting | Multiple network calls, timing |
 
 ### MCP Client
 
-Abstracts transport details and provides a unified interface:
+Location: `packages/client/src/`
+
+```
+client/
+├── client.ts            MCPHttpClient (implements MCPClient)
+├── transport.ts         HttpTransport (fetch-based, SSE + JSON)
+├── request-builder.ts   Builds JSON-RPC 2.0 requests
+└── index.ts             createMCPClient() factory
+```
 
 ```typescript
 interface MCPClient {
-  // Connect to server
   connect(): Promise<void>;
-  
-  // Send JSON-RPC request
-  sendRequest(request: MCPRequest): Promise<MCPResponse>;
-  
-  // Call a tool
+  sendRequest<T>(request: MCPRequest): Promise<MCPResponse<T>>;
   callTool(name: string, args: Record<string, unknown>): Promise<ToolResult>;
-  
-  // List available tools
   listTools(): Promise<ToolDefinition[]>;
-  
-  // Close connection
   disconnect(): Promise<void>;
+  getSessionId(): Promise<string>;
 }
 ```
 
-**Transport Implementations:**
+**Transport:** `HttpTransport` sends POST requests with JSON-RPC bodies. It auto-detects SSE responses via the `text/event-stream` content-type and deserializes them. Includes configurable retry with exponential backoff (100 ms base, 2 s max).
 
-| Transport | Use Case | Protocol |
-|-----------|----------|----------|
-| **StreamableHTTP** | Modern MCP servers | HTTP POST to `/mcp` |
-| **SSE** | Legacy MCP servers | Server-Sent Events |
-| **Stdio** | Local development | Child process stdio |
+### Validators
 
-**Design Decision:** The client handles retry logic, timeout management, and
-error normalization so validators can focus on validation logic.
+Location: `packages/validators/src/`
 
-### Reporter System
-
-Formats test results for different consumers:
-
-```typescript
-interface Reporter {
-  // Generate report from results
-  report(results: TestReport): Promise<string>;
-  
-  // Write to file or stdout
-  write(output: string, destination?: string): Promise<void>;
-}
+```
+validators/src/
+├── registry/       schema, invariant, env-expansion
+├── protocol/       jsonrpc, tool-discovery, tool-execution, session
+├── routing/        request-contract, response-contract, compatibility
+├── security/       ssrf, auth, input-sanitization
+└── performance/    latency, concurrency, rate-limit
 ```
 
-**Reporter Implementations:**
-
-| Reporter | Output | Use Case |
-|----------|--------|----------|
-| **Console** | Colored terminal output | Interactive CLI usage |
-| **JSON** | Machine-readable JSON | CI/CD pipelines, programmatic use |
-| **HTML** | Interactive dashboard | Human review, sharing results |
-| **Markdown** | GitHub-flavored markdown | PR comments, documentation |
-
----
-
-## Validator Deep Dive
-
-### Registry Compliance Validators
+#### Registry Compliance Validators
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -251,25 +234,25 @@ interface Reporter {
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-**SchemaValidator:**
+**SchemaValidator** (`packages/validators/src/registry/schema.validator.ts`):
 - Parses YAML file
 - Validates against `AgentConfigSchema` (Zod)
 - Reports field-level errors with line numbers
-- Checks required fields: agent_id, display_name, description, endpoint, type, is_default, confidence_threshold, clarification_required, examples
+- Required fields: agent_id, display_name, description, endpoint, type, is_default, confidence_threshold, clarification_required, examples
 
-**InvariantValidator:**
+**InvariantValidator** (`packages/validators/src/registry/invariant.validator.ts`):
 - Exactly one agent has `is_default: true`
 - Default agent has `confidence_threshold: 0`
 - All agent IDs are unique
-- Endpoint URLs are valid and not localhost/private IPs (SSRF protection)
-- File sizes are within limits
+- Endpoint URLs are valid and not localhost/private IPs
+- File sizes within configured limits
 
-**EnvExpansionValidator:**
+**EnvExpansionValidator** (`packages/validators/src/registry/env-expansion.validator.ts`):
 - Validates `${ENV_VAR}` syntax
-- Warns about undefined variables
+- Warns about undefined environment variables
 - Detects circular references
 
-### Protocol Conformance Validators
+#### Protocol Conformance Validators
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -301,7 +284,7 @@ interface Reporter {
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-**JSONRPCValidator:**
+**JSONRPCValidator** (`packages/validators/src/protocol/jsonrpc.validator.ts`):
 - Sends test requests and validates responses
 - Checks `jsonrpc: "2.0"` in all responses
 - Validates `id` field matches request
@@ -309,7 +292,7 @@ interface Reporter {
 - Validates error object structure (code, message, optional data)
 - Checks error codes are in valid ranges
 
-**ToolDiscoveryValidator:**
+**ToolDiscoveryValidator** (`packages/validators/src/protocol/tool-discovery.validator.ts`):
 - Calls `tools/list` method
 - Validates response is an array
 - Each tool has required fields (name, description, inputSchema)
@@ -317,20 +300,20 @@ interface Reporter {
 - Tool names follow conventions (lowercase, hyphens)
 - Input schemas are valid JSON Schema
 
-**ToolExecutionValidator:**
+**ToolExecutionValidator** (`packages/validators/src/protocol/tool-execution.validator.ts`):
 - Calls each discovered tool with valid inputs
 - Validates input schema enforcement
 - Checks response contains valid content array
 - Tests error handling for unknown tools
 - Validates timeout behavior
 
-**SessionValidator:**
+**SessionValidator** (`packages/validators/src/protocol/session.validator.ts`):
 - Creates session and validates ID format
 - Verifies session persists across requests
 - Tests session cleanup on termination
 - Validates concurrent session isolation
 
-### Routing Contract Validators
+#### Routing Contract Validators
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -349,25 +332,24 @@ interface Reporter {
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-**RequestContractValidator:**
+**RequestContractValidator** (`packages/validators/src/routing/request-contract.validator.ts`):
 - Validates the standard request schema sent by orchestrators
 - Required fields: session_id (UUID), request_id (UUID), employee_id, raw_input
 - Optional fields: display_name, intent_summary, entities, turn_history, workflow_state
 - Field type validation (UUIDs, string lengths, array structures)
 
-**ResponseContractValidator:**
+**ResponseContractValidator** (`packages/validators/src/routing/response-contract.validator.ts`):
 - Validates the standard response schema agents must return
 - Required fields: content (non-empty string), workflow_complete (boolean)
 - Optional fields: workflow_state, isError, errorMessage
-- Content must be a non-empty string
 
-**CompatibilityValidator:**
+**CompatibilityValidator** (`packages/validators/src/routing/compatibility.validator.ts`):
 - Sends test requests to the agent
 - Validates responses match expected contract
 - Tests with various input scenarios (empty, long, special chars, Unicode)
 - Verifies error handling consistency
 
-### Security Validators
+#### Security Validators
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -388,22 +370,22 @@ interface Reporter {
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-**SSRFValidator:**
+**SSRFValidator** (`packages/validators/src/security/ssrf.validator.ts`):
 - Validates endpoint URLs reject localhost and private IPs
 - Tests DNS rebinding detection
 - Validates redirect following behavior
 
-**AuthValidator:**
+**AuthValidator** (`packages/validators/src/security/auth.validator.ts`):
 - Checks if API key is required (configurable)
 - Validates invalid keys are rejected with 401
 - Tests auth bypass attempts
 
-**InputSanitizationValidator:**
+**InputSanitizationValidator** (`packages/validators/src/security/input-sanitization.validator.ts`):
 - Sends prompt injection patterns
 - Validates XSS prevention
 - Tests SQL injection pattern handling
 
-### Performance Validators
+#### Performance Validators
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -424,139 +406,169 @@ interface Reporter {
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-**LatencyValidator:**
+**LatencyValidator** (`packages/validators/src/performance/latency.validator.ts`):
 - Measures response times for various operations
 - Calculates p50, p90, p99 percentiles
 - Validates against configurable thresholds
 - Tests timeout behavior
 
-**ConcurrencyValidator:**
+**ConcurrencyValidator** (`packages/validators/src/performance/concurrency.validator.ts`):
 - Sends multiple simultaneous requests
 - Validates no race conditions
 - Checks data integrity under load
 - Verifies resource cleanup
 
-**RateLimitValidator:**
+**RateLimitValidator** (`packages/validators/src/performance/rate-limit.validator.ts`):
 - Sends requests exceeding rate limit
 - Validates 429 response
 - Checks Retry-After header presence
 - Tests rate limit reset behavior
 
----
+### Reporters
 
-## Data Flow
-
-### Test Execution Flow
+Location: `packages/reporters/src/`
 
 ```
-1. User invokes CLI or library API
-        │
-2. Configuration resolved (suites, filters, options)
-        │
-3. MCP connection established to target server
-        │
-4. Connectivity validated (ping/health check)
-        │
-5. Validators executed:
-   - Registry validators (file-based, parallel)
-   - Protocol validators (network calls, parallel)
-   - Routing validators (specific payloads, sequential)
-   - Security validators (edge cases, sequential)
-   - Performance validators (timing, sequential)
-        │
-6. Results aggregated
-        │
-7. Report generated (console, JSON, HTML, or markdown)
-        │
-8. Exit code set based on severity threshold
-        │
-9. Connection closed
+reporters/src/
+├── console.reporter.ts     Colored terminal output
+├── json.reporter.ts        Machine-readable JSON
+├── markdown.reporter.ts    GitHub-flavored markdown
+└── html.reporter.ts        Interactive HTML dashboard
 ```
 
-### Validator Execution Flow
+```typescript
+type ReportFormat = 'console' | 'json' | 'markdown' | 'html';
 
-```
-For each validator:
-  1. Setup (if applicable)
-  2. Execute validation logic
-  3. Capture result (pass/fail, severity, message, remediation)
-  4. Teardown (if applicable)
-  5. Report progress (streaming)
+function formatReport(report: TestReport, format: ReportFormat): Promise<string>;
 ```
 
----
+| Reporter | Output | Use Case |
+|----------|--------|----------|
+| `console` | Colored terminal output | Interactive CLI usage |
+| `json` | Machine-readable JSON | CI/CD pipelines, programmatic use |
+| `markdown` | GitHub-flavored markdown | PR comments, documentation |
+| `html` | Interactive dashboard | Human review, sharing results |
 
-## Error Handling
+### Observability
 
-| Error Type | Detection | Recovery |
-|------------|-----------|----------|
-| Network timeout | Request exceeds timeout | Retry with backoff, then fail |
-| Invalid JSON-RPC response | Parse error | Report as critical protocol failure |
-| Connection refused | TCP error | Report server unreachable |
-| SSL certificate error | TLS handshake failure | Report security issue |
-| YAML parse error | YAML parser exception | Report with line number |
-| Schema validation error | Zod parse error | Report field-level errors |
+Location: `packages/observability/src/`
 
----
+#### Logger (`logger.ts`)
 
-## Observability
+Pino-based structured logger with PII redaction. Sensitive keys (`password`, `token`, `secret`, `key`, `authorization`, `api_key`, `employee_id`, `session_id`) are automatically replaced with `[REDACTED]`.
 
-### Structured Logging
+```typescript
+import { logger, createLogger } from '@reaatech/mcp-contract-observability';
 
-All operations logged with:
-- `timestamp` — ISO-8601
-- `service` — "mcp-contract-kit"
-- `request_id` — Unique test run identifier
-- `validator` — Current validator name
-- `level` — Log level (debug, info, warn, error)
+// Default logger
+logger.info('Connected to server', { endpoint: 'https://agent.example.com' });
 
-### Tracing
+// Child logger with request context
+const child = logger.child({ request_id: 'abc-123' });
+child.warn('Slow response', { durationMs: 2500 });
+```
 
-Each test run generates OpenTelemetry spans:
-- Root span for entire test run
-- Child span per validator
-- Attributes: duration, result, severity
+#### Metrics (`metrics.ts`)
 
-### Metrics
+In-memory singleton collector with counters and duration histograms. Buckets: 10, 50, 100, 250, 500, 1000, 2500, 5000, 10000 ms.
 
-| Metric | Type | Labels |
-|--------|------|--------|
-| `contract_kit.runs.total` | Counter | `status` |
-| `contract_kit.validator.duration_ms` | Histogram | `validator`, `category` |
-| `contract_kit.results.total` | Counter | `severity`, `category` |
+```typescript
+import { metrics, MetricNames } from '@reaatech/mcp-contract-observability';
 
----
+metrics.inc(MetricNames.TESTS_TOTAL, 1);
+metrics.recordDuration(MetricNames.VALIDATOR_DURATION, 42, { validator: 'jsonrpc' });
+
+// Summary
+const summary = metrics.getSummary();
+// { uptime: 12, counters: { ... }, histograms: { ... } }
+```
+
+| Metric Constant | Type | Labels |
+|-----------------|------|--------|
+| `MetricNames.TESTS_TOTAL` | Counter | `validator`, `category` |
+| `MetricNames.TESTS_PASSED` | Counter | `validator`, `category` |
+| `MetricNames.TESTS_FAILED` | Counter | `validator`, `category` |
+| `MetricNames.TESTS_WARNING` | Counter | `validator`, `category` |
+| `MetricNames.VALIDATOR_DURATION` | Histogram | `validator`, `category` |
+| `MetricNames.RUN_DURATION` | Histogram | — |
+| `MetricNames.ERRORS_TOTAL` | Counter | `validator`, `category` |
+
+#### Tracing (`tracing.ts`)
+
+In-memory span tracing with W3C trace context propagation.
+
+```typescript
+import { startSpan, endSpan, withSpan, toTraceParent } from '@reaatech/mcp-contract-observability';
+
+// Manual span
+const span = startSpan('jsonrpc.check', { endpoint: 'https://...' });
+// ... do work ...
+endSpan(span, 'ok');
+
+// Auto-span wrapper
+await withSpan('full.suite.run', async () => {
+  // all work inside is measured
+});
+
+// W3C propagation
+const header = toTraceParent(span.context); // "00-<traceId>-<spanId>-01"
+```
 
 ## Configuration
+
+### CLI Usage
+
+```
+mcp-contract-kit test <endpoint> [OPTIONS]
+mcp-contract-kit validate-yaml <path> [OPTIONS]
+```
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--suite <name>` | `all` | Test suite: registry, protocol, routing, security, performance (repeatable) |
+| `--format <format>` | `console` | Output format: console, json, markdown, html |
+| `--output <path>` | stdout | Write report to file |
+| `--verbose` | `false` | Show detailed output |
+| `--fail-on <level>` | `critical` | Exit error threshold: critical, warning |
+| `--timeout <ms>` | `30000` | Request timeout in milliseconds |
+| `--retries <n>` | `3` | Retry count for transient failures |
+| `--strict` | `false` | (validate-yaml) Fail on warnings too |
+| `--help` | — | Show help message |
+| `--version` | — | Show version |
 
 ### Environment Variables
 
 | Variable | Default | Description |
 |----------|---------|-------------|
+| `LOG_LEVEL` | `info` | Pino logging level (debug, info, warn, error) |
 | `MCP_TIMEOUT_MS` | `30000` | Request timeout |
 | `MCP_RETRIES` | `3` | Retry count for transient failures |
-| `LOG_LEVEL` | `info` | Logging level |
-| `OTEL_EXPORTER_OTLP_ENDPOINT` | — | OTel collector endpoint |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | — | OpenTelemetry collector endpoint (optional) |
 
-### CLI Flags
+### Exit Codes
 
-| Flag | Description |
-|------|-------------|
-| `--endpoint` | MCP server URL |
-| `--suite` | Test suite to run (can be repeated) |
-| `--format` | Output format (console, json, html, markdown) |
-| `--output` | Write report to file |
-| `--verbose` | Detailed output |
-| `--fail-on` | Exit code threshold (critical, warning) |
-| `--yaml` | Path to agent YAML for registry validation |
-| `--timeout` | Request timeout in milliseconds |
+| Code | Meaning |
+|------|---------|
+| `0` | All tests passed (or only info-level findings) |
+| `1` | Critical failures found |
+| `2` | Warning failures found (with `--fail-on warning` or `--strict`) |
+| `3` | Test execution error (network, timeout, crash) |
 
----
+## Error Handling
+
+| Error Type | Detection | Recovery |
+|------------|-----------|----------|
+| Network timeout | AbortController fires after `--timeout` ms | Retry with exponential backoff (100 ms → 2 s), then fail |
+| Invalid JSON-RPC response | JSON parse error or missing `jsonrpc` field | Report as critical protocol failure |
+| Connection refused | TCP error from `fetch()` | Report server unreachable |
+| Content-type mismatch | SSE payload when JSON expected (or vice versa) | Auto-detected and deserialized |
+| YAML parse error | YAML parser exception | Report with line number |
+| Schema validation error | Zod parse error | Report field-level errors with path |
 
 ## References
 
-- **AGENTS.md** — Agent development guide
-- **DEV_PLAN.md** — Development checklist
+- **AGENTS.md** — Agent development guide and conformance checklist
 - **README.md** — Quick start and overview
+- **skills/** — Skill definitions for each test category
+- **packages/** — Monorepo package source code
 - **MCP Specification** — https://modelcontextprotocol.io/
-- **ask-gm/orchestrator-core/tests/contract** — Contract testing reference

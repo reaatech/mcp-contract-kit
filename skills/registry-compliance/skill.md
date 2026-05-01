@@ -4,6 +4,8 @@
 
 Validates agent registry YAML files against the expected schema and invariants.
 
+## Package: @reaatech/mcp-contract-validators
+
 ## What It Checks
 
 - **Schema Validation**: All required fields present, correct types
@@ -34,3 +36,9 @@ mcp-contract-kit test http://localhost:8080 --suite registry
 | Multiple default agents | Set exactly one agent as `is_default: true` |
 | Invalid endpoint URL | Use a valid HTTPS URL (not localhost for production) |
 | Duplicate agent IDs | Ensure all agent_id values are unique |
+
+## Related Packages
+
+- `@reaatech/mcp-contract-core` — Shared types and utilities
+- `@reaatech/mcp-contract-client` — MCP client for agent connectivity
+- `@reaatech/mcp-contract-cli` — CLI tool (`mcp-contract-kit`)
