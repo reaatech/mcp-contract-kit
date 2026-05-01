@@ -4,6 +4,8 @@
 
 Validates request/response contract compatibility between orchestrators and MCP agents.
 
+## Package: @reaatech/mcp-contract-validators
+
 ## What It Checks
 
 - **Request Contract**: Validates orchestrator → agent request format
@@ -47,3 +49,10 @@ mcp-contract-kit test http://localhost:8080 --suite routing
   "workflow_complete": "boolean",
   "workflow_state": "object (optional)"
 }
+```
+
+## Related Packages
+
+- `@reaatech/mcp-contract-core` — Shared types and utilities
+- `@reaatech/mcp-contract-client` — MCP client for agent connectivity
+- `@reaatech/mcp-contract-cli` — CLI tool (`mcp-contract-kit`)

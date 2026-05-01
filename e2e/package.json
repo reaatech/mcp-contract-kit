@@ -1,0 +1,24 @@
+{
+  "name": "@reaatech/mcp-contract-e2e",
+  "version": "0.1.0",
+  "private": true,
+  "description": "End-to-end tests for mcp-contract-kit",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@reaatech/mcp-contract-core": "workspace:*",
+    "@reaatech/mcp-contract-client": "workspace:*",
+    "@reaatech/mcp-contract-validators": "workspace:*",
+    "@reaatech/mcp-contract-reporters": "workspace:*",
+    "@reaatech/mcp-contract-observability": "workspace:*",
+    "@reaatech/mcp-contract-cli": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.1"
+  }
+}

@@ -4,8 +4,8 @@
 
 import { readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { formatReport, ReportFormat } from '../src/reporters/index.js';
-import { TestReport } from '../src/types/domain.js';
+import { type ReportFormat, formatReport } from '../src/reporters/index.js';
+import type { TestReport } from '../src/types/domain.js';
 
 async function main(): Promise<void> {
   const [, , inputPath, formatArg = 'markdown', outputPath] = process.argv;

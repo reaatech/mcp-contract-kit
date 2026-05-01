@@ -4,6 +4,8 @@
 
 Validates MCP server compliance with the JSON-RPC 2.0 specification and MCP protocol requirements.
 
+## Package: @reaatech/mcp-contract-validators
+
 ## What It Checks
 
 - **JSON-RPC 2.0**: Proper `jsonrpc: "2.0"` field, matching `id`, result/error exclusivity
@@ -33,3 +35,9 @@ mcp-contract-kit test http://localhost:8080 --suite protocol
 | Invalid tool schema | Use proper JSON Schema format for tool inputSchema |
 | Unknown tool handling | Return proper error for undefined tool names |
 | Session issues | Implement consistent session ID generation |
+
+## Related Packages
+
+- `@reaatech/mcp-contract-core` — Shared types and utilities
+- `@reaatech/mcp-contract-client` — MCP client for agent connectivity
+- `@reaatech/mcp-contract-cli` — CLI tool (`mcp-contract-kit`)
