@@ -24,7 +24,7 @@ export function getRoutingValidators(): Validator[] {
   return routingValidators.filter((v) => v.category === TestCategory.ROUTING);
 }
 
+export { compatibilityValidator } from './compatibility.validator.js';
 // Re-export individual validators
 export { requestContractValidator } from './request-contract.validator.js';
 export { responseContractValidator } from './response-contract.validator.js';
-export { compatibilityValidator } from './compatibility.validator.js';

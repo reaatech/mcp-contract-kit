@@ -3,8 +3,7 @@
  */
 
 import { writeFile } from 'node:fs/promises';
-import { formatReport } from '@reaatech/mcp-contract-reporters';
-import { printConsoleReport } from '@reaatech/mcp-contract-reporters';
+import { formatReport, printConsoleReport } from '@reaatech/mcp-contract-reporters';
 import type { ParsedCliArgs } from '../config.js';
 import { runTests } from '../runner.js';
 

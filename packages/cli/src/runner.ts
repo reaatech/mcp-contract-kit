@@ -3,7 +3,6 @@
  */
 
 import { createMCPClient } from '@reaatech/mcp-contract-client';
-import { Severity, TestCategory, TestSuite, generateUUID } from '@reaatech/mcp-contract-core';
 import type {
   MCPClient,
   TestReport,
@@ -11,10 +10,10 @@ import type {
   ValidationContext,
   Validator,
 } from '@reaatech/mcp-contract-core';
-import { now } from '@reaatech/mcp-contract-core';
+import { generateUUID, now, Severity, TestCategory, TestSuite } from '@reaatech/mcp-contract-core';
 import { MetricNames, metrics } from '@reaatech/mcp-contract-observability';
-import { formatReport } from '@reaatech/mcp-contract-reporters';
 import type { ReportFormat } from '@reaatech/mcp-contract-reporters';
+import { formatReport } from '@reaatech/mcp-contract-reporters';
 import {
   getPerformanceValidators,
   getProtocolValidators,
@@ -83,6 +82,8 @@ function getValidatorsForSuites(suites: TestCategory[]): Validator[] {
         return getSecurityValidators();
       case TestCategory.PERFORMANCE:
         return getPerformanceValidators();
+      default:
+        return [];
     }
   });
 }

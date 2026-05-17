@@ -4,7 +4,7 @@
 
 import { readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { type ReportFormat, formatReport } from '../src/reporters/index.js';
+import { formatReport, type ReportFormat } from '../src/reporters/index.js';
 import type { TestReport } from '../src/types/domain.js';
 
 async function main(): Promise<void> {

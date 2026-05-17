@@ -28,6 +28,6 @@ export function getProtocolValidators(): Validator[] {
 
 // Re-export individual validators
 export { jsonrpcValidator } from './jsonrpc.validator.js';
+export { sessionValidator } from './session.validator.js';
 export { toolDiscoveryValidator } from './tool-discovery.validator.js';
 export { toolExecutionValidator } from './tool-execution.validator.js';
-export { sessionValidator } from './session.validator.js';

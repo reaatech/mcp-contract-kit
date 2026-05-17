@@ -4,95 +4,83 @@
  * Conformance test suite for MCP servers.
  */
 
-// CLI internals (exposed for e2e testing)
-export { main } from './main.js';
-export { parseArgs, printHelp, CLI_VERSION } from './config.js';
-export type { ParsedCliArgs } from './config.js';
-
-// Runner
-export {
-  runTests,
-  validateRegistry,
-  validateProtocol,
-  validateRouting,
-  generateReport,
-} from './runner.js';
-export type { RunOptions } from './runner.js';
-
-// Domain types
-export {
-  TestSuite,
-  Severity,
-  TestCategory,
-} from '@reaatech/mcp-contract-core';
+// MCP Client
+export { createMCPClient, MCPHttpClient } from '@reaatech/mcp-contract-client';
 export type {
-  TestResult,
-  TestReport,
-  Validator,
-  ValidationContext,
-  ValidationError,
   MCPClient,
+  MCPError,
   MCPRequest,
   MCPResponse,
-  MCPError,
+  TestReport,
+  TestResult,
   ToolDefinition,
   ToolResult,
+  ValidationContext,
+  ValidationError,
+  Validator,
 } from '@reaatech/mcp-contract-core';
-
+// Domain types
 // Schemas
+// Utilities
 export {
+  type AgentConfig,
   AgentConfigSchema,
-  MCPRequestSchema,
-  MCPResponseSchema,
-  ToolDefinitionSchema,
   AgentRequestContractSchema,
   AgentResponseContractSchema,
-  type AgentConfig,
   type AgentType,
+  generateId,
+  generateUUID,
+  isPrivateURL,
+  isValidURL,
+  MCPRequestSchema,
+  MCPResponseSchema,
+  now,
+  Severity,
+  TestCategory,
+  TestSuite,
+  ToolDefinitionSchema,
 } from '@reaatech/mcp-contract-core';
-
+export type { Span, SpanContext } from '@reaatech/mcp-contract-observability';
+// Observability
+export {
+  clearSpans,
+  createLogger,
+  endSpan,
+  fromTraceParent,
+  getCurrentContext,
+  getSpans,
+  logger,
+  MetricNames,
+  metrics,
+  setCurrentContext,
+  startSpan,
+  toTraceParent,
+  withSpan,
+} from '@reaatech/mcp-contract-observability';
 // Reporters
+// HTML Reporter
 export {
   formatConsoleReport,
-  printConsoleReport,
   formatJsonReport,
   formatMarkdownReport,
   formatReport,
+  generateHtmlReport,
+  printConsoleReport,
   type ReportFormat,
 } from '@reaatech/mcp-contract-reporters';
 
 // Validators
 export * from '@reaatech/mcp-contract-validators';
-
-// MCP Client
-export { MCPHttpClient, createMCPClient } from '@reaatech/mcp-contract-client';
-
-// Utilities
+export type { ParsedCliArgs } from './config.js';
+export { CLI_VERSION, parseArgs, printHelp } from './config.js';
+// CLI internals (exposed for e2e testing)
+export { main } from './main.js';
+export type { RunOptions } from './runner.js';
+// Runner
 export {
-  generateUUID,
-  generateId,
-  now,
-  isValidURL,
-  isPrivateURL,
-} from '@reaatech/mcp-contract-core';
-
-// Observability
-export {
-  logger,
-  createLogger,
-  metrics,
-  MetricNames,
-  startSpan,
-  endSpan,
-  getCurrentContext,
-  setCurrentContext,
-  getSpans,
-  clearSpans,
-  withSpan,
-  toTraceParent,
-  fromTraceParent,
-} from '@reaatech/mcp-contract-observability';
-export type { Span, SpanContext } from '@reaatech/mcp-contract-observability';
-
-// HTML Reporter
-export { generateHtmlReport } from '@reaatech/mcp-contract-reporters';
+  generateReport,
+  runTests,
+  validateProtocol,
+  validateRegistry,
+  validateRouting,
+} from './runner.js';

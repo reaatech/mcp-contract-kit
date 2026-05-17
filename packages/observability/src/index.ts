@@ -2,17 +2,17 @@
  * Observability module — barrel export
  */
 
-export { logger, createLogger } from './logger.js';
-export { metrics, MetricNames } from './metrics.js';
-export {
-  startSpan,
-  endSpan,
-  getCurrentContext,
-  setCurrentContext,
-  getSpans,
-  clearSpans,
-  withSpan,
-  toTraceParent,
-  fromTraceParent,
-} from './tracing.js';
+export { createLogger, logger } from './logger.js';
+export { MetricNames, metrics } from './metrics.js';
 export type { Span, SpanContext } from './tracing.js';
+export {
+  clearSpans,
+  endSpan,
+  fromTraceParent,
+  getCurrentContext,
+  getSpans,
+  setCurrentContext,
+  startSpan,
+  toTraceParent,
+  withSpan,
+} from './tracing.js';
