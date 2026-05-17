@@ -24,7 +24,7 @@ export function getSecurityValidators(): Validator[] {
   return securityValidators.filter((v) => v.category === TestCategory.SECURITY);
 }
 
-// Re-export individual validators
-export { ssrfValidator } from './ssrf.validator.js';
 export { authValidator } from './auth.validator.js';
 export { inputSanitizationValidator } from './input-sanitization.validator.js';
+// Re-export individual validators
+export { ssrfValidator } from './ssrf.validator.js';

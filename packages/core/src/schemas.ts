@@ -139,4 +139,4 @@ export function isValidUUID(value: string): boolean {
   return UUID_REGEX.test(value);
 }
 
-export { isValidURL, isPrivateURL } from './utils.js';
+export { isPrivateURL, isValidURL } from './utils.js';

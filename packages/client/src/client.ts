@@ -16,8 +16,8 @@ import {
   buildListToolsRequest,
   buildToolCallRequest,
 } from './request-builder.js';
-import { HttpTransport } from './transport.js';
 import type { MCPTransport } from './transport.js';
+import { HttpTransport } from './transport.js';
 
 interface MCPClientOptions {
   endpoint: string;

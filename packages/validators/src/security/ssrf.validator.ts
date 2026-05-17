@@ -3,7 +3,7 @@
  */
 
 import type { TestResult, ValidationContext, Validator } from '@reaatech/mcp-contract-core';
-import { Severity, TestCategory, isPrivateURL, now } from '@reaatech/mcp-contract-core';
+import { isPrivateURL, now, Severity, TestCategory } from '@reaatech/mcp-contract-core';
 
 /**
  * SSRF validator implementation
