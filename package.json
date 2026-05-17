@@ -39,7 +39,10 @@
   },
   "homepage": "https://github.com/reaatech/mcp-contract-kit#readme",
   "pnpm": {
-    "onlyBuiltDependencies": ["@biomejs/biome", "esbuild"]
+    "onlyBuiltDependencies": ["@biomejs/biome", "esbuild"],
+    "overrides": {
+      "fast-uri": ">=3.1.2"
+    }
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
