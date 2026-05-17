@@ -24,12 +24,12 @@ export function getRegistryValidators(): Validator[] {
   return registryValidators.filter((v) => v.category === TestCategory.REGISTRY);
 }
 
+export {
+  envExpansionValidator,
+  extractEnvVars,
+  validateEnvExpansion,
+} from './env-expansion.validator.js';
+export { invariantValidator, validateInvariants } from './invariant.validator.js';
 // Re-export individual validators
-export { schemaValidator } from './schema.validator.js';
-export { invariantValidator } from './invariant.validator.js';
-export { envExpansionValidator } from './env-expansion.validator.js';
-
 // Re-export helper functions
-export { validateAgentYAML } from './schema.validator.js';
-export { validateInvariants } from './invariant.validator.js';
-export { validateEnvExpansion, extractEnvVars } from './env-expansion.validator.js';
+export { schemaValidator, validateAgentYAML } from './schema.validator.js';

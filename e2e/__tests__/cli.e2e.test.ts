@@ -1,8 +1,7 @@
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
-import { main } from '@reaatech/mcp-contract-cli';
-import { CLI_VERSION, parseArgs, printHelp } from '@reaatech/mcp-contract-cli';
+import { CLI_VERSION, main, parseArgs, printHelp } from '@reaatech/mcp-contract-cli';
 import { Severity, TestCategory } from '@reaatech/mcp-contract-core';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
