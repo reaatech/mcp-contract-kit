@@ -11,7 +11,7 @@ import type {
   ValidationError,
   Validator,
 } from '@reaatech/mcp-contract-core';
-import { Severity, TestCategory, isPrivateURL, isValidURL, now } from '@reaatech/mcp-contract-core';
+import { isPrivateURL, isValidURL, now, Severity, TestCategory } from '@reaatech/mcp-contract-core';
 import { loadRegistryFile } from './shared.js';
 
 interface InvariantValidationResult {

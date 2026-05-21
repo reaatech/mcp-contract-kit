@@ -3,8 +3,7 @@
  */
 
 import type { MCPRequest } from '@reaatech/mcp-contract-core';
-import { generateUUID } from '@reaatech/mcp-contract-core';
-import { getVersion } from '@reaatech/mcp-contract-core';
+import { generateUUID, getVersion } from '@reaatech/mcp-contract-core';
 import { getCurrentContext, toTraceParent } from '@reaatech/mcp-contract-observability';
 
 export function buildRequest(

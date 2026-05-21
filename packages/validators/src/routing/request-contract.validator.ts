@@ -10,10 +10,10 @@ import type {
 } from '@reaatech/mcp-contract-core';
 import {
   AgentRequestContractSchema,
-  Severity,
-  TestCategory,
   generateUUID,
   now,
+  Severity,
+  TestCategory,
 } from '@reaatech/mcp-contract-core';
 
 /**

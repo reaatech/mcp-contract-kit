@@ -27,7 +27,9 @@
   "bin": {
     "mcp-contract-kit": "./dist/cli.js"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "publishConfig": {
     "access": "public"
   },
