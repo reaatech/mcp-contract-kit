@@ -24,7 +24,7 @@ export function getPerformanceValidators(): Validator[] {
   return performanceValidators.filter((v) => v.category === TestCategory.PERFORMANCE);
 }
 
+export { concurrencyValidator } from './concurrency.validator.js';
 // Re-export individual validators
 export { latencyValidator } from './latency.validator.js';
-export { concurrencyValidator } from './concurrency.validator.js';
 export { rateLimitValidator } from './rate-limit.validator.js';

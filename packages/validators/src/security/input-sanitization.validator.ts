@@ -3,7 +3,7 @@
  */
 
 import type { TestResult, ValidationContext, Validator } from '@reaatech/mcp-contract-core';
-import { Severity, TestCategory, generateUUID, now } from '@reaatech/mcp-contract-core';
+import { generateUUID, now, Severity, TestCategory } from '@reaatech/mcp-contract-core';
 
 /**
  * Prompt injection patterns to test

@@ -5,10 +5,10 @@
 import type { TestResult, ValidationContext, Validator } from '@reaatech/mcp-contract-core';
 import {
   AgentResponseContractSchema,
-  Severity,
-  TestCategory,
   generateUUID,
   now,
+  Severity,
+  TestCategory,
 } from '@reaatech/mcp-contract-core';
 
 /**

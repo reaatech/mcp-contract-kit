@@ -9,9 +9,9 @@ import { formatJsonReport } from './json.reporter.js';
 import { formatMarkdownReport } from './markdown.reporter.js';
 
 export { formatConsoleReport, printConsoleReport } from './console.reporter.js';
+export { generateHtmlReport } from './html.reporter.js';
 export { formatJsonReport } from './json.reporter.js';
 export { formatMarkdownReport } from './markdown.reporter.js';
-export { generateHtmlReport } from './html.reporter.js';
 
 export type ReportFormat = 'console' | 'json' | 'markdown' | 'html';
 

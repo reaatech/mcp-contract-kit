@@ -3,7 +3,7 @@
  */
 
 import type { TestResult, ValidationContext, Validator } from '@reaatech/mcp-contract-core';
-import { Severity, TestCategory, calculateStats, now } from '@reaatech/mcp-contract-core';
+import { calculateStats, now, Severity, TestCategory } from '@reaatech/mcp-contract-core';
 
 /** Default latency thresholds in milliseconds */
 const THRESHOLDS = {
