@@ -3,7 +3,7 @@
  */
 
 import type { TestResult, ValidationContext, Validator } from '@reaatech/mcp-contract-core';
-import { Severity, TestCategory, now } from '@reaatech/mcp-contract-core';
+import { now, Severity, TestCategory } from '@reaatech/mcp-contract-core';
 
 /**
  * Concurrency validator implementation

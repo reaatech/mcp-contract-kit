@@ -2,13 +2,13 @@
  * MCP Client barrel exports
  */
 
-export { MCPHttpClient, createMCPClient } from './client.js';
+export { createMCPClient, MCPHttpClient } from './client.js';
 export {
-  buildRequest,
   buildInitializeRequest,
   buildListToolsRequest,
+  buildRequest,
   buildToolCallRequest,
   createTracingHeaders,
 } from './request-builder.js';
-export { HttpTransport } from './transport.js';
 export type { MCPTransport, TransportOptions, TransportResponse } from './transport.js';
+export { HttpTransport } from './transport.js';

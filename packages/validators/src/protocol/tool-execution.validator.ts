@@ -8,7 +8,7 @@ import type {
   ValidationContext,
   Validator,
 } from '@reaatech/mcp-contract-core';
-import { Severity, TestCategory, now } from '@reaatech/mcp-contract-core';
+import { now, Severity, TestCategory } from '@reaatech/mcp-contract-core';
 
 function buildSampleValue(schema: Record<string, unknown>): unknown {
   if (Array.isArray(schema.enum) && schema.enum.length > 0) {
