@@ -46,7 +46,7 @@
     "@reaatech/mcp-contract-validators": "workspace:*",
     "@reaatech/mcp-contract-reporters": "workspace:*",
     "@reaatech/mcp-contract-observability": "workspace:*",
-    "commander": "^14.0.3"
+    "commander": "^15.0.0"
   },
   "devDependencies": {
     "@types/node": "^25.6.0",
