@@ -1,6 +1,6 @@
 {
   "name": "@reaatech/mcp-contract-client",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "MCP client SDK for connecting to and testing MCP servers",
   "license": "MIT",
   "author": "Rick Somers <rick@reaatech.com> (https://reaatech.com)",
