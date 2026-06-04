@@ -1,6 +1,6 @@
 {
   "name": "@reaatech/mcp-contract-validators",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Conformance validators for MCP servers (protocol, registry, routing, security, performance)",
   "license": "MIT",
   "author": "Rick Somers <rick@reaatech.com> (https://reaatech.com)",

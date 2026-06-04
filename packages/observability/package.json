@@ -1,6 +1,6 @@
 {
   "name": "@reaatech/mcp-contract-observability",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Structured logging, metrics, and tracing for MCP contract validation",
   "license": "MIT",
   "author": "Rick Somers <rick@reaatech.com> (https://reaatech.com)",

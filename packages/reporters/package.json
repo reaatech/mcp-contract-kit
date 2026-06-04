@@ -1,6 +1,6 @@
 {
   "name": "@reaatech/mcp-contract-reporters",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Report formatters for MCP contract validation (console, JSON, markdown, HTML)",
   "license": "MIT",
   "author": "Rick Somers <rick@reaatech.com> (https://reaatech.com)",
