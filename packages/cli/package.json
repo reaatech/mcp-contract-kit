@@ -1,6 +1,6 @@
 {
   "name": "@reaatech/mcp-contract-cli",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "CLI tool and public API for MCP contract conformance testing",
   "license": "MIT",
   "author": "Rick Somers <rick@reaatech.com> (https://reaatech.com)",

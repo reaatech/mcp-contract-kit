@@ -1,5 +1,13 @@
 # @reaatech/mcp-contract-cli
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @reaatech/mcp-contract-client@0.2.0
+  - @reaatech/mcp-contract-validators@0.1.2
+
 ## 0.2.0
 
 ### Minor Changes

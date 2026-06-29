@@ -25,8 +25,12 @@ function validateJSONRPCResponse(
     errors.push(`Missing or invalid 'jsonrpc' field. Expected '2.0', got '${response.jsonrpc}'`);
   }
 
-  // Check id matches request
-  if (response.id !== requestId) {
+  // Check id matches request. Per JSON-RPC 2.0, responses to Invalid Request
+  // (-32600) and Parse error (-32700) carry a null id because the request id
+  // could not be reliably associated, so a null id is valid for those.
+  const errorCode = response.error?.code;
+  const nullIdAllowed = response.id === null && (errorCode === -32600 || errorCode === -32700);
+  if (response.id !== requestId && !nullIdAllowed) {
     errors.push(
       `Response 'id' (${String(response.id)}) does not match request 'id' (${String(requestId)})`,
     );
