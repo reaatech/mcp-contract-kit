@@ -34,7 +34,8 @@ describe('MCPHttpClient streamable-HTTP behavior', () => {
     const fetchMock = vi.fn(async (_url: string, init: RequestInit) => {
       headerSnapshots.push({ ...(init.headers as Record<string, string>) });
       // Only the first (initialize) response carries the session id.
-      const extra = headerSnapshots.length === 1 ? { 'mcp-session-id': 'sess-abc' } : {};
+      const extra: Record<string, string> =
+        headerSnapshots.length === 1 ? { 'mcp-session-id': 'sess-abc' } : {};
       return jsonResponse({ jsonrpc: '2.0', id: 1, result: { tools: [] } }, extra);
     });
     vi.stubGlobal('fetch', fetchMock);
