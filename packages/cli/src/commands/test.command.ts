@@ -19,6 +19,7 @@ export async function runTestCommand(options: ParsedCliArgs): Promise<number> {
     retries: options.retries,
     verbose: options.verbose,
     failOn: options.failOn,
+    headers: options.headers,
   });
 
   if (options.output) {

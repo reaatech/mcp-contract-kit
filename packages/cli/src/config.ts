@@ -19,6 +19,7 @@ export interface ParsedCliArgs {
   timeout: number;
   retries: number;
   strict: boolean;
+  headers?: Record<string, string>;
 }
 
 const SUITE_MAP: Record<string, TestCategory> = {
@@ -52,6 +53,9 @@ OPTIONS:
   --fail-on <level>     Exit with error on: critical, warning (default: critical)
   --timeout <ms>        Request timeout in milliseconds (default: 30000)
   --retries <n>         Number of retries for transient failures (default: 3)
+  --bearer <token>      Send Authorization: Bearer <token> on every request
+                        (for auth-gated MCP endpoints)
+  --header "K: V"       Add a custom request header (can be repeated)
   --strict              (validate-yaml) Fail on warnings too
   --help                Show this help message
   --version             Show version
@@ -121,6 +125,26 @@ export function parseArgs(args: string[]): ParsedCliArgs {
       case '--retries':
         parsed.retries = Number.parseInt(args[++index] ?? '3', 10);
         break;
+      case '--bearer': {
+        const token = args[++index] ?? '';
+        if (token) {
+          parsed.headers = { ...parsed.headers, Authorization: `Bearer ${token}` };
+        }
+        break;
+      }
+      case '--header': {
+        const raw = args[++index] ?? '';
+        const separator = raw.indexOf(':');
+        if (separator === -1) {
+          throw new Error(`Invalid --header "${raw}". Expected "Name: Value".`);
+        }
+        const name = raw.slice(0, separator).trim();
+        const value = raw.slice(separator + 1).trim();
+        if (name) {
+          parsed.headers = { ...parsed.headers, [name]: value };
+        }
+        break;
+      }
       case '--strict':
         parsed.strict = true;
         break;
