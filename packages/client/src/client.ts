@@ -65,6 +65,15 @@ export class MCPHttpClient implements MCPClient {
 
   async sendRequest<T = unknown>(request: MCPRequest): Promise<MCPResponse<T>> {
     const response = await this.transport.request<T>(request);
+    // The Streamable HTTP transport assigns a session on `initialize` and returns
+    // it in the Mcp-Session-Id response header; every subsequent request must echo
+    // it back or the server rejects them (HTTP 400). Capture it once and pin it on
+    // the transport so all later requests carry it.
+    const sessionId = response.headers?.get?.('mcp-session-id');
+    if (sessionId && sessionId !== this.sessionId) {
+      this.sessionId = sessionId;
+      this.transport.setHeader('mcp-session-id', sessionId);
+    }
     return response.body;
   }
 
@@ -124,6 +133,8 @@ export class MCPHttpClient implements MCPClient {
   }
 
   async getSessionId(): Promise<string> {
+    // Prefer the server-assigned session id (captured in sendRequest); fall back
+    // to a generated one only if the server never issued one.
     this.sessionId ??= generateId();
     return this.sessionId;
   }

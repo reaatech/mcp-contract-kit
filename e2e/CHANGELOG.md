@@ -1,5 +1,21 @@
 # @reaatech/mcp-contract-e2e
 
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @reaatech/mcp-contract-client@0.2.0
+  - @reaatech/mcp-contract-validators@0.1.2
+  - @reaatech/mcp-contract-cli@0.2.1
+
+## 0.1.2
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @reaatech/mcp-contract-cli@0.2.0
+
 ## 0.1.1
 
 ### Patch Changes

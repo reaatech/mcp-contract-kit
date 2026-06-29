@@ -1,5 +1,20 @@
 # @reaatech/mcp-contract-validators
 
+## 0.1.2
+
+### Patch Changes
+
+- Make the HTTP client work correctly against MCP Streamable HTTP servers:
+
+  - Send `Accept: application/json, text/event-stream` by default (the transport otherwise answers HTTP 406). Header names are normalized to lowercase so an explicit `--header Accept` cleanly overrides it.
+  - Capture the server-assigned `Mcp-Session-Id` from the `initialize` response and echo it on every subsequent request, instead of generating a throwaway id. Without this, post-initialize requests (`tools/list`, tool calls) were rejected with HTTP 400.
+  - Return JSON-RPC error responses carried on a non-2xx HTTP status (e.g. `400` for "Invalid Request") instead of throwing them away as transport errors, so validators can inspect the actual JSON-RPC error.
+
+  Validators: per JSON-RPC 2.0, accept a `null` id on Invalid Request (`-32600`) and Parse error (`-32700`) responses (the id can't be reliably associated), rather than flagging an id mismatch.
+
+- Updated dependencies []:
+  - @reaatech/mcp-contract-client@0.2.0
+
 ## 0.1.1
 
 ### Patch Changes

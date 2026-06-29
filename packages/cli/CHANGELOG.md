@@ -1,5 +1,19 @@
 # @reaatech/mcp-contract-cli
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @reaatech/mcp-contract-client@0.2.0
+  - @reaatech/mcp-contract-validators@0.1.2
+
+## 0.2.0
+
+### Minor Changes
+
+- Add `--bearer <token>` and `--header "Name: Value"` (repeatable) options to `test`, so the conformance suites can run against Bearer-gated / auth-required MCP endpoints. Previously such servers returned HTTP 401 on connect and 0 suites ran. `--bearer` sets `Authorization: Bearer <token>`; `--header` adds arbitrary request headers. Both flow through to every request via the existing transport `headers` support. Closes [#26](https://github.com/reaatech/mcp-contract-kit/issues/26).
+
 ## 0.1.1
 
 ### Patch Changes
